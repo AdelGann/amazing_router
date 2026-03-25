@@ -1,0 +1,7 @@
+src/
+node_modules/
+.amazing-router/
+tests/
+tsconfig.json
+tsup.config.ts
+.git/
