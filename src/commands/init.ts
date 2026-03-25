@@ -28,7 +28,7 @@ import { BuilderConfigInterface } from "amazing-router";
  */
 export const config: BuilderConfigInterface = {
   /** Directories to scan for routing files */
-  paths: ["src/app"],
+  accepted_paths: ["src/app"],
   
   /** Allowed file extensions */
   accepted_extensions: ["tsx", "ts", "vue"],
