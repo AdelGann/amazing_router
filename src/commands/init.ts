@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "../utils";
+import { logger, detectFramework, getTemplateForFramework } from "../utils";
 
 /**
  * Logic to initialize the amazing-router configuration.
@@ -8,6 +8,7 @@ import { logger } from "../utils";
 export const initializeProject = (): void => {
   const configPath = path.resolve(process.cwd(), "amazing.config.ts");
   const dotDir = path.resolve(process.cwd(), ".amazing-router");
+  const appDir = path.resolve(process.cwd(), "src/app");
 
   if (!fs.existsSync(dotDir)) {
     fs.mkdirSync(dotDir, { recursive: true });
@@ -20,7 +21,7 @@ export const initializeProject = (): void => {
   }
 
   const template = `
-import { BuilderConfigInterface } from "amazing-router";
+import { BuilderConfigInterface } from "@amazing-router/core";
 
 /**
  * Amazing Router Configuration
@@ -39,6 +40,20 @@ export default config;
 
   try {
     fs.writeFileSync(configPath, template);
+
+    if (!fs.existsSync(appDir)) {
+      fs.mkdirSync(appDir, { recursive: true });
+    }
+
+    const framework = detectFramework();
+    const { extension, content: pageContent } = getTemplateForFramework(framework, "page", "page");
+    const dynamicPagePath = path.resolve(process.cwd(), `src/app/page${extension}`);
+
+    if (!fs.existsSync(dynamicPagePath)) {
+      fs.writeFileSync(dynamicPagePath, pageContent);
+      logger.info(`Created: src/app/page${extension}`);
+    }
+
     logger.success("✨ Project initialized successfully!");
     logger.info("Created: amazing.config.ts");
     logger.info("Created: .amazing-router/ (Internal cache)");

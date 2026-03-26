@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "../utils";
+import { logger, detectFramework, getTemplateForFramework } from "../utils";
 
 interface NewOptions {
   at: string;
@@ -18,8 +18,11 @@ export const createNewFile = (type: string, options: NewOptions): void => {
   }
 
   /** Assuming src/app as base, but could be dynamic from config */
-  const targetDir = path.resolve(process.cwd(), "src/app", options.at);
-  const extension = type === "middleware" ? ".ts" : ".tsx";
+  const relativePath = options.at === "/" ? "." : options.at;
+  const targetDir = path.resolve(process.cwd(), "src/app", relativePath);
+  
+  const framework = detectFramework();
+  const { extension, content } = getTemplateForFramework(framework, type, options.at);
   const filePath = path.join(targetDir, `${type}${extension}`);
 
   if (!fs.existsSync(targetDir)) {
@@ -31,8 +34,6 @@ export const createNewFile = (type: string, options: NewOptions): void => {
     return;
   }
 
-  const template = `/** Generated ${type} for ${options.at} */\nexport default function ${type.toUpperCase()}() { return null; }`;
-
-  fs.writeFileSync(filePath, template);
+  fs.writeFileSync(filePath, content);
   logger.success(`Created ${type} at ${options.at}`);
 };

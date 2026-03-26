@@ -14,6 +14,7 @@ import { initializeProject } from "./commands/init";
 import { createNewFile } from "./commands/new";
 import { listRoutes } from "./commands/list";
 import { exportRoutes } from "./commands/export";
+import { logger } from "./utils";
 
 /**
  * Initialize CAC (Command And Conquer) instance.
@@ -76,5 +77,6 @@ try {
   cli.parse();
 } catch (error) {
   /** SILENT FAIL: Handled by CAC's internal error reporting */
+  logger.error("Unexpected error:", error);
   process.exit(1);
 }
