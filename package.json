@@ -22,6 +22,14 @@
   ],
   "author": "AdelGann",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdelGann/amazing-router-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AdelGann/amazing-router-core/issues"
+  },
+  "homepage": "https://github.com/AdelGann/amazing-router-core#readme",
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
