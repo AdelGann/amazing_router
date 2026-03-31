@@ -16,3 +16,6 @@ export { AmazingRouterPlugin } from "./plugins/webpack";
 /** Configuration & Types */
 export { default as BuilderConfig } from "./config/builder.config";
 export * from "./types";
+
+// logger
+export { logger } from "./utils/logger";

@@ -1,6 +1,7 @@
 import path from "node:path";
 import { RouteNode } from "../types";
 import { FOLDER_PATTERNS } from "../utils/variables";
+import { extractMetadata } from "@amazing_router/utils/extractMetaData";
 
 /**
  * RouteParser is responsible for transforming raw file system paths into
@@ -40,15 +41,26 @@ export default class RouteParser {
    */
   private processFile(absolutePath: string): void {
     const webPath = this.buildWebPath(absolutePath);
-    const fileName = path.parse(absolutePath).name;
+    const parsedPath = path.parse(absolutePath);
+    const fileName = parsedPath.name;
 
     let routeNode = this.routeMap.get(webPath);
     if (!routeNode) {
       routeNode = {
         id: this.generateRouteId(webPath),
         path: webPath,
+        meta: {},
       };
       this.routeMap.set(webPath, routeNode);
+    }
+
+    if (fileName === "page" || fileName === "layout") {
+      const newMeta = extractMetadata(absolutePath);
+
+      routeNode.meta = {
+        ...routeNode.meta,
+        ...newMeta,
+      };
     }
 
     switch (fileName) {
@@ -61,12 +73,7 @@ export default class RouteParser {
       case "middleware":
         routeNode.middlewarePath = absolutePath;
         break;
-      case "loader":
-        /** @todo Implement support for data loaders */
-        break;
-      case "error":
-        /** @todo Implement support for error boundaries */
-        break;
+      // ... otros casos
     }
   }
 
