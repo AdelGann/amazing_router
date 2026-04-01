@@ -3,6 +3,7 @@ import { BuilderConfigInterface } from "../types";
 import fs from "node:fs";
 import path from "node:path";
 import BuildRouter from "@amazing_router/core/builder";
+import { generateRouteFilesSource } from "../utils/generateRouteFiles";
 
 /**
  * Vite plugin for Amazing Router.
@@ -19,6 +20,9 @@ export function amazingRouterPlugin(options?: BuilderConfigInterface): Plugin {
       fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     }
     fs.writeFileSync(outputPath, JSON.stringify(tree, null, 2));
+
+    const routeFilesPath = path.resolve(path.dirname(outputPath), "routeFiles.ts");
+    fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree));
   };
 
   return {

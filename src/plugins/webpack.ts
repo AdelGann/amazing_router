@@ -3,6 +3,7 @@ import BuildRouter from "@amazing_router/core/builder";
 import { BuilderConfigInterface, RouteNode } from "../types";
 import fs from "node:fs";
 import path from "node:path";
+import { generateRouteFilesSource } from "../utils/generateRouteFiles";
 
 /**
  * Webpack plugin for Amazing Router.
@@ -41,6 +42,9 @@ export class AmazingRouterPlugin {
       }
 
       fs.writeFileSync(this.outputPath, JSON.stringify(tree, null, 2));
+
+      const routeFilesPath = path.resolve(dir, "routeFiles.ts");
+      fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree));
     };
 
     /**
