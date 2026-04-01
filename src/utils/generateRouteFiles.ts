@@ -1,22 +1,28 @@
 import { RouteNode } from "../types";
+import path from "node:path";
 
-export function generateRouteFilesSource(nodes: RouteNode[]): string {
+export function generateRouteFilesSource(nodes: RouteNode[], outDir: string): string {
   const imports: string[] = [];
   
   function traverse(nodes: RouteNode[]) {
     for (const node of nodes) {
       if (node.pagePath) {
-        const fp = node.pagePath.replace(/\\/g, "/");
-        imports.push(`  "${fp}": () => import("${fp}")`);
+        const fpOrig = node.pagePath.replace(/\\/g, "/");
+        let relPath = path.relative(outDir, node.pagePath).replace(/\\/g, "/");
+        if (!relPath.startsWith(".")) relPath = "./" + relPath;
+        imports.push(`  "${fpOrig}": () => import("${relPath}")`);
       }
       if (node.layoutPath) {
-        const fp = node.layoutPath.replace(/\\/g, "/");
-        imports.push(`  "${fp}": () => import("${fp}")`);
+        const fpOrig = node.layoutPath.replace(/\\/g, "/");
+        let relPath = path.relative(outDir, node.layoutPath).replace(/\\/g, "/");
+        if (!relPath.startsWith(".")) relPath = "./" + relPath;
+        imports.push(`  "${fpOrig}": () => import("${relPath}")`);
       }
       if (node.middlewarePath) {
-        // middleware is server side usually, but maybe they import it
-        const fp = node.middlewarePath.replace(/\\/g, "/");
-        imports.push(`  "${fp}": () => import("${fp}")`);
+        const fpOrig = node.middlewarePath.replace(/\\/g, "/");
+        let relPath = path.relative(outDir, node.middlewarePath).replace(/\\/g, "/");
+        if (!relPath.startsWith(".")) relPath = "./" + relPath;
+        imports.push(`  "${fpOrig}": () => import("${relPath}")`);
       }
       if (node.children) {
         traverse(node.children);

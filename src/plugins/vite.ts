@@ -22,7 +22,7 @@ export function amazingRouterPlugin(options?: BuilderConfigInterface): Plugin {
     fs.writeFileSync(outputPath, JSON.stringify(tree, null, 2));
 
     const routeFilesPath = path.resolve(path.dirname(outputPath), "routeFiles.ts");
-    fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree));
+    fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree, path.dirname(outputPath)));
   };
 
   return {
@@ -33,15 +33,25 @@ export function amazingRouterPlugin(options?: BuilderConfigInterface): Plugin {
     },
 
     configureServer(server: ViteDevServer): void {
+      const isRouteFile = (f: string) => /page\.[tj]sx?$/.test(f) || /layout\.[tj]sx?$/.test(f) || /middleware\.[tj]sx?$/.test(f);
+
       server.watcher.on("add", (file: string) => {
-        if (file.includes("page.tsx") || file.includes("layout.tsx")) {
+        if (isRouteFile(file)) {
           generate();
           server.ws.send({ type: "full-reload" });
         }
       });
 
+      server.watcher.on("change", (file: string) => {
+        if (isRouteFile(file)) {
+          generate();
+          // No full-reload needed — Vite's HMR handles the component update.
+          // But routes.json needs refreshing so meta is up to date.
+        }
+      });
+
       server.watcher.on("unlink", (file: string) => {
-        if (file.includes("page.tsx") || file.includes("layout.tsx")) {
+        if (isRouteFile(file)) {
           generate();
           server.ws.send({ type: "full-reload" });
         }

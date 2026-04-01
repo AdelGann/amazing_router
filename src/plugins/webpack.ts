@@ -44,7 +44,7 @@ export class AmazingRouterPlugin {
       fs.writeFileSync(this.outputPath, JSON.stringify(tree, null, 2));
 
       const routeFilesPath = path.resolve(dir, "routeFiles.ts");
-      fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree));
+      fs.writeFileSync(routeFilesPath, generateRouteFilesSource(tree, dir));
     };
 
     /**
